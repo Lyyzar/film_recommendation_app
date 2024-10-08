@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { displayPopularMovies, searchMovies } from "./api";
 import { notification } from "antd";
-import { Movie, MovieResponse, Movies } from "./interfaces";
-import NavBar from "./NavBar";
+import { Movie, MovieResponse, MovieSearchResponse } from "../interfaces";
+import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
+import { displayPopularMovies, searchMovies } from "../routes/api";
 
 function Home() {
   const [query, setQuery] = useState<string>("");
-  const [movies, setMovies] = useState<MovieResponse>({
+  const [movies, setMovies] = useState<MovieSearchResponse>({
     page: 1,
     results: [],
   });
@@ -45,6 +45,7 @@ function Home() {
 
     try {
       setMovies(await searchMovies(query));
+      console.log("Results:" + movies.results);
       notification.success({
         message: "Successfull query",
         description: "The popular movies are displayed!",
@@ -93,30 +94,49 @@ function Home() {
               </div>
             </div>
           )}
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search..."
-            />
-            <button
-              type="submit"
-              className="ml-2 bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Search
-            </button>
-          </form>
+          <div className="text-right mr-5">
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                className="rounded-lg p-2"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search..."
+              />
+              <button
+                type="submit"
+                className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
+              >
+                Search
+              </button>
+            </form>
+          </div>
           {movies.results?.length > 0 && (
-            <div>
-              <h2>Results:</h2>
-              <ul>
-                {movies.results.map((movie, index) => (
-                  <li key={index}>
-                    <h3 className="text-3xl font-bold">{movie.title}</h3>
-                    <p>{movie.overview}</p>
-                  </li>
-                ))}
+            <div className="mt-4">
+              <ul className="mx-10">
+                {movies.results.map((movie, index) => {
+                  let imgSrc =
+                    "https://image.tmdb.org/t/p/w500" + movie.poster_path;
+                  console.log("Image source movies:" + imgSrc);
+                  return (
+                    <li
+                      key={index}
+                      className="max-h-52 h-52 overflow-hidden text-left mb-5 border bg-gray-600 rounded-lg"
+                    >
+                      <div className="h-full flex">
+                        <img
+                          src={imgSrc}
+                          alt="poster"
+                          className="max-h-full w-auto object-contain"
+                        />
+                        <div className="flex flex-col p-2">
+                          <div className="font-bold text-xl">{movie.title}</div>
+                          <p>{movie.overview}</p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

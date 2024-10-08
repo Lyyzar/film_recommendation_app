@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Movie, MovieResponse, Movies } from "./interfaces";
+import { Movie, MovieResponse, MovieSearchResponse } from "../interfaces";
 
 const api = axios.create({
   baseURL: "http://localhost:8080", // Set the base URL
@@ -16,7 +16,9 @@ export const displayPopularMovies = async (): Promise<Movie[]> => {
   }
 };
 
-export const searchMovies = async (keyword: string): Promise<MovieResponse> => {
+export const searchMovies = async (
+  keyword: string
+): Promise<MovieSearchResponse> => {
   try {
     console.log("SearchMovies", keyword);
     const response = await api.get(`/search?keyword=${keyword}`);

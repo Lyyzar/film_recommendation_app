@@ -1,5 +1,5 @@
 import { useLocation, useParams } from "react-router-dom";
-import NavBar from "./NavBar";
+import NavBar from "../components/NavBar";
 
 function FilmPage() {
   const { film_name } = useParams();
