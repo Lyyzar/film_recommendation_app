@@ -76,7 +76,10 @@ public class MovieService {
                 JSONArray genreIdsArray = movieObject.getJSONArray("genre_ids");
                 StringBuilder movieGenres = new StringBuilder();
                 for (int j = 0; j < genreIdsArray.length(); j++) {
-                    movieGenres.append(genreMap.get(genreIdsArray.getInt(j))).append(",");
+                    if (j > 0) {
+                        movieGenres.append(", ");
+                    }
+                    movieGenres.append(genreMap.get(genreIdsArray.getInt(j)));
                 }
 
                 movie.setGenre(movieGenres.toString());
