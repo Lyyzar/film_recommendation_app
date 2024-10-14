@@ -8,6 +8,8 @@ import { EyeIcon as EyeSolid } from "@heroicons/react/24/solid";
 
 import { useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
+import { notification } from "antd";
+import { addFilmToFavourites, addFilmToWatchlist } from "../routes/api";
 
 function FilmPage() {
   const location = useLocation();
@@ -31,6 +33,38 @@ function FilmPage() {
   }
 
   let imgSrc = "https://image.tmdb.org/t/p/w500" + movie.posterUrl;
+
+  const handleHeartIconClick = async () => {
+    try {
+      await addFilmToFavourites(movie);
+      notification.success({
+        message: "Successfull query",
+        description: "The popular movies are displayed!",
+      });
+    } catch (error) {
+      console.log(error, "error");
+      notification.error({
+        message: "Error",
+        description: "Something went wrong!",
+      });
+    }
+  };
+
+  const handleWatchlistIconClick = async () => {
+    try {
+      await addFilmToWatchlist(movie);
+      notification.success({
+        message: "Successfull query",
+        description: "The popular movies are displayed!",
+      });
+    } catch (error) {
+      console.log(error, "error");
+      notification.error({
+        message: "Error",
+        description: "Something went wrong!",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-400 text-black">
@@ -82,7 +116,10 @@ function FilmPage() {
                   >
                     {toggleHeart || isHeartHovered ? (
                       <Tooltip title={toolTipForHeart} placement="top">
-                        <HeartSolid className="size-10" />
+                        <HeartSolid
+                          onClick={handleHeartIconClick}
+                          className="size-10"
+                        />
                       </Tooltip>
                     ) : (
                       <HeartOutline className="size-10" />
@@ -97,7 +134,10 @@ function FilmPage() {
                   >
                     {toggleWatchlist || isWatchlistHovered ? (
                       <Tooltip title={toolTipForWatchlist} placement="top">
-                        <EyeSolid className="size-10" />
+                        <EyeSolid
+                          onClick={handleWatchlistIconClick}
+                          className="size-10"
+                        />
                       </Tooltip>
                     ) : (
                       <EyeOutline className="size-10" />

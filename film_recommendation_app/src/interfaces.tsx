@@ -31,3 +31,15 @@ export interface MovieSearch {
 export interface Movies {
   movies: Movie[];
 }
+
+export const transformToMovie = (movieSearch: MovieSearch): Movie => {
+  return {
+    id: movieSearch.id,
+    title: movieSearch.title,
+    genre: movieSearch.genre,
+    overview: movieSearch.overview,
+    releaseDate: movieSearch.releaseDate,
+    rating: movieSearch.rating,
+    posterUrl: movieSearch.poster_path,
+  };
+};

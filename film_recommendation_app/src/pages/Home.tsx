@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { notification } from "antd";
-import {
-  Movie,
-  MovieResponse,
-  MovieSearch,
-  MovieSearchResponse,
-} from "../interfaces";
+import { Movie, MovieResponse, MovieSearch } from "../interfaces";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import { displayPopularMovies, searchMovies } from "../routes/api";
 
 function Home() {
   const [query, setQuery] = useState<string>("");
-  const [movies, setMovies] = useState<MovieSearchResponse>({
-    page: 1,
-    results: [],
-  });
+  const [searchedMovies, setSearchedMovies] = useState<Movie[]>([]);
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
 
   const navigate = useNavigate();
@@ -27,10 +19,12 @@ function Home() {
   const popularMoviesSetup = async () => {
     try {
       setPopularMovies(await displayPopularMovies());
-      notification.success({
+      /* 
+        notification.success({
         message: "Successfull query",
         description: "The popular movies are displayed!",
       });
+      */
     } catch (error) {
       console.log(error, "error");
       notification.error({
@@ -45,26 +39,21 @@ function Home() {
     navigate(`/film/${movie.title}`, { state: { movie } });
   };
 
-  const handleSearchClick = (movie: MovieSearch) => {
-    console.log(movie);
-    navigate(`/film/${movie.title}`, { state: { movie } });
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      setMovies(await searchMovies(query));
-      console.log("Results:" + movies.results);
+      setSearchedMovies(await searchMovies(query));
+      console.log("Results:" + searchedMovies);
       notification.success({
         message: "Successfull query",
-        description: "The popular movies are displayed!",
+        description: "The searched movies are displayed!",
       });
     } catch (error) {
       console.log(error, "error");
       notification.error({
         message: "Error",
-        description: "Your playertag is incorrect!",
+        description: "There was an error in the search!",
       });
     }
   };
@@ -121,17 +110,17 @@ function Home() {
               </button>
             </form>
           </div>
-          {movies.results?.length > 0 && (
+          {searchedMovies?.length > 0 && (
             <div className="mt-4 flex justify-center">
               <ul className="mx-10 flex flex-col items-center">
-                {movies.results.map((movie, index) => {
+                {searchedMovies.map((movie, index) => {
                   let imgSrc =
-                    "https://image.tmdb.org/t/p/w500" + movie.poster_path;
+                    "https://image.tmdb.org/t/p/w500" + movie.posterUrl;
                   return (
                     <li
                       key={index}
                       className="max-h-52 h-52 w-1/2 overflow-hidden text-left mb-5 border border-red-800 bg-gray-600 transition transform hover:scale-105 ease-out rounded-lg hover:cursor-pointer"
-                      onClick={() => handleSearchClick(movie)}
+                      onClick={() => handleImageClick(movie)}
                     >
                       <div className="h-full flex">
                         <img
