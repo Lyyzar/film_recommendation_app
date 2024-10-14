@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { notification } from "antd";
-import { Movie, MovieResponse, MovieSearchResponse } from "../interfaces";
+import {
+  Movie,
+  MovieResponse,
+  MovieSearch,
+  MovieSearchResponse,
+} from "../interfaces";
 import NavBar from "../components/NavBar";
 import { useNavigate } from "react-router-dom";
 import { displayPopularMovies, searchMovies } from "../routes/api";
@@ -37,7 +42,12 @@ function Home() {
 
   const handleImageClick = (movie: Movie) => {
     console.log(movie);
-    navigate(`/film/${movie.title}`);
+    navigate(`/film/${movie.title}`, { state: { movie } });
+  };
+
+  const handleSearchClick = (movie: MovieSearch) => {
+    console.log(movie);
+    navigate(`/film/${movie.title}`, { state: { movie } });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +70,7 @@ function Home() {
   };
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       <NavBar />
       <div className="bg-gray-400 pt-10 h-full">
         <div className="text-center min-h-screen w-full">
@@ -84,7 +94,7 @@ function Home() {
                     >
                       <img
                         src={imgSrc}
-                        className="max-h-full object-contain transform transition duration-300 ease-out hover:scale-105 hover:shadow-lg"
+                        className="max-h-full object-contain transform transition duration-300 ease-out hover:scale-105 hover:cursor-pointer"
                         alt="poster"
                         onClick={() => handleImageClick(movie)}
                       />
@@ -112,16 +122,16 @@ function Home() {
             </form>
           </div>
           {movies.results?.length > 0 && (
-            <div className="mt-4">
-              <ul className="mx-10">
+            <div className="mt-4 flex justify-center">
+              <ul className="mx-10 flex flex-col items-center">
                 {movies.results.map((movie, index) => {
                   let imgSrc =
                     "https://image.tmdb.org/t/p/w500" + movie.poster_path;
-                  console.log("Image source movies:" + imgSrc);
                   return (
                     <li
                       key={index}
-                      className="max-h-52 h-52 overflow-hidden text-left mb-5 border bg-gray-600 rounded-lg"
+                      className="max-h-52 h-52 w-1/2 overflow-hidden text-left mb-5 border border-red-800 bg-gray-600 transition transform hover:scale-105 ease-out rounded-lg hover:cursor-pointer"
+                      onClick={() => handleSearchClick(movie)}
                     >
                       <div className="h-full flex">
                         <img

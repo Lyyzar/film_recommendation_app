@@ -8,7 +8,8 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/film:film_name" element={<FilmPage />} />
+        <Route path="/film/:film_name" element={<FilmPage />} />
+        <Route path="/search/:keyword" element={<Home />} />
       </Routes>
     </BrowserRouter>
   );
