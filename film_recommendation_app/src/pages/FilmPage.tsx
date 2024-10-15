@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { Movie } from "../interfaces";
 import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
@@ -10,10 +10,15 @@ import { useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
 import { notification } from "antd";
 import { addFilmToFavourites, addFilmToWatchlist } from "../routes/api";
+import useAuth from "../hooks/useAuth";
+import { getAuth, signOut } from "firebase/auth";
 
 function FilmPage() {
   const location = useLocation();
   const movie: Movie = location.state?.movie;
+  const user = useAuth();
+
+  const navigate = useNavigate();
 
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isWatchlistHovered, setIsWatchlistHovered] = useState(false);
@@ -28,6 +33,21 @@ function FilmPage() {
     ? "Add to watchlist"
     : "Remove from watchlist";
 
+  const handleMissingToken = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      const auth = getAuth();
+      signOut(auth)
+        .then(() => {
+          console.log("No token found. Logging out.");
+          navigate("/signin");
+        })
+        .catch((error) => {
+          console.error("Error during logout: ", error);
+        });
+    }
+  };
+
   if (!movie) {
     return <div>Movie not found or no movie data available.</div>;
   }
@@ -36,11 +56,18 @@ function FilmPage() {
 
   const handleHeartIconClick = async () => {
     try {
-      await addFilmToFavourites(movie);
-      notification.success({
-        message: "Successfull query",
-        description: "The popular movies are displayed!",
-      });
+      if (!user) {
+        navigate("/");
+      } else {
+        handleMissingToken();
+        //await addFilmToFavourites(movie);
+        notification.success({
+          message: "Successfull query",
+          description:
+            "You have succesfully added this film to your watchlist!",
+        });
+        console.log(`Film ${movie.title} liked by user ${user.uid}`);
+      }
     } catch (error) {
       console.log(error, "error");
       notification.error({
@@ -52,11 +79,19 @@ function FilmPage() {
 
   const handleWatchlistIconClick = async () => {
     try {
-      await addFilmToWatchlist(movie);
-      notification.success({
-        message: "Successfull query",
-        description: "The popular movies are displayed!",
-      });
+      if (!user) {
+        navigate("/");
+      } else {
+        //await addFilmToWatchlist(movie);
+        handleMissingToken();
+        notification.success({
+          message: "Successfull like!",
+          description: "You have succesfully liked this film!",
+        });
+        console.log(
+          `Film ${movie.title} added to the watchlist of ${user.uid} user!`
+        );
+      }
     } catch (error) {
       console.log(error, "error");
       notification.error({
@@ -70,12 +105,19 @@ function FilmPage() {
     <div className="min-h-screen bg-gray-400 text-black">
       <NavBar />
       <div id="main" className="m-10 min-h-full">
-        <div id="card" className="flex flex-row bg-gray-600 rounded-lg">
+        <div
+          id="card"
+          className="flex flex-row min-h-full bg-gray-600 rounded-lg"
+        >
           <div id="card-left">
-            <img src={imgSrc} alt="poster" className="rounded-l-lg" />
+            <img
+              src={imgSrc}
+              alt="poster"
+              className="rounded-l-lg min-h-full w-auto"
+            />
           </div>
 
-          <div id="card-right" className="flex flex-col">
+          <div id="card-right" className="flex flex-col w-full">
             {/* Card Header */}
             <div
               id="card-header"
@@ -85,9 +127,7 @@ function FilmPage() {
                 id="first-row"
                 className="flex flex-row justify-between rounded-tr-lg"
               >
-                <div id="title" className="">
-                  {movie.title}
-                </div>
+                <div id="title">{movie.title}</div>
                 <div id="rating">{movie.rating}</div>
               </div>
               <div id="second-row" className="text-lg italic mt-2">
