@@ -89,6 +89,10 @@ application.properties
 /.pnp
 .pnp.js
 
+.env
+src/main/resources/config/firebase-service-account.json
+
+
 # testing
 /coverage
 

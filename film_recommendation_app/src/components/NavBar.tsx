@@ -36,19 +36,26 @@ const NavBar = () => {
                 Home
               </a>
             </li>
-            <li>
-              <div
-                onClick={openSignInModal}
-                className="hover:text-gray-300 hover:cursor-pointer"
-              >
-                Sign In
-              </div>
+            <li className="hover:text-gray-300 hover:cursor-pointer">
+              Contact
             </li>
-            <li>
-              <a href="/signUp" className="hover:text-gray-300">
-                Sign Up
-              </a>
-            </li>
+            {user ? (
+              <li>
+                <div className="hover:text-gray-300 hover:cursor-pointer">
+                  Profile
+                </div>
+              </li>
+            ) : (
+              <li>
+                <div
+                  onClick={openSignInModal}
+                  className="hover:text-gray-300 hover:cursor-pointer"
+                >
+                  Sign In
+                </div>
+              </li>
+            )}
+
             {user ? (
               <li>
                 <Logout />
@@ -64,20 +71,17 @@ const NavBar = () => {
         contentLabel="Login Modal"
         style={{
           content: {
-            width: "400px",
-            height: "400px",
+            width: "500px",
+            height: "500px",
             margin: "auto",
-            padding: "20px",
+            backgroundColor: "transparent",
+            border: "none",
+            boxShadow: "none",
+            overflow: "hidden",
           },
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.6)" },
         }}
       >
-        <button
-          className="rounded bg-black text-white w-4 h-4 flex items-center justify-center p-3"
-          onClick={closeSignInModal}
-        >
-          X
-        </button>
         <SignIn
           isSignInOpen={isSignInModalOpen}
           setIsSignInOpen={setIsSignInModalOpen}
@@ -92,20 +96,17 @@ const NavBar = () => {
         contentLabel="Sign Up Modal"
         style={{
           content: {
-            width: "400px",
-            height: "400px",
+            width: "500px",
+            height: "500px",
             margin: "auto",
-            padding: "20px",
+            backgroundColor: "transparent",
+            border: "none",
+            boxShadow: "none",
+            overflow: "hidden",
           },
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.6)" },
         }}
       >
-        <button
-          className="rounded bg-black text-white w-4 h-4 flex items-center justify-center p-3"
-          onClick={closeSignUpModal}
-        >
-          X
-        </button>
         <SignUp
           isSignInOpen={isSignInModalOpen}
           setIsSignInOpen={setIsSignInModalOpen}

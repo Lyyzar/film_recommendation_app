@@ -32,10 +32,20 @@ const SignUp = (props: {
   };
 
   return (
-    <div className="p-10 bg-blue-800 flex flex-col w-fit h-fit justify-center items-center text-white">
+    <div className="p-20 bg-blue-800 flex flex-col w-fit h-fit justify-center rounded-xl items-center text-white">
+      <div className="w-full flex justify-end">
+        <button
+          className="rounded bg-black text-white w-4 h-4 flex items-center justify-center p-3"
+          onClick={() => {
+            props.setIsSignUpOpen(false);
+          }}
+        >
+          X
+        </button>
+      </div>
       <h2 className="text-xl font-bold m-2">Sign Up</h2>
       <form
-        className="flex flex-col justify-center items-center"
+        className="flex flex-col justify-center items-center text-black"
         onSubmit={handleSignUp}
       >
         <input
@@ -54,8 +64,8 @@ const SignUp = (props: {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <div className="text-sm m-2">
-          Already have an accounnt?
+        <div className="text-sm text-white m-2">
+          Already have an account?
           <div
             onClick={() => {
               props.setIsSignUpOpen(false);

@@ -1,6 +1,7 @@
 import React from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { notification } from "antd";
 
 const Logout: React.FC = () => {
   const navigate = useNavigate();
@@ -10,9 +11,16 @@ const Logout: React.FC = () => {
     try {
       await signOut(auth);
       localStorage.removeItem("token");
-      alert("User signed out successfully");
-      navigate("/");
+
+      notification.success({
+        message: "Successfull logout!",
+        description: "You have succesfully logged out!",
+      });
     } catch (error) {
+      notification.error({
+        message: "Failed to logout",
+        description: "Something went wrong!",
+      });
       console.error("Error logging out: ", error);
     }
   };

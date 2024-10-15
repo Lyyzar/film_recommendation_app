@@ -31,7 +31,7 @@ const SignIn = (props: {
           message: "Successfull Login!",
           description: "You have now logged in!",
         });
-        navigate("/");
+        props.setIsSignInOpen(false);
       }
     } catch (err: any) {
       notification.error({
@@ -42,10 +42,20 @@ const SignIn = (props: {
   };
 
   return (
-    <div className="p-10 bg-blue-800 flex flex-col w-fit h-fit justify-center items-center text-white">
+    <div className="p-20 bg-blue-800 flex flex-col w-fit h-fit justify-center items-center rounded-xl text-white">
+      <div className="w-full flex justify-end">
+        <button
+          className="rounded bg-black text-white w-4 h-4 flex items-center justify-center p-3"
+          onClick={() => {
+            props.setIsSignInOpen(false);
+          }}
+        >
+          X
+        </button>
+      </div>
       <h2 className="text-xl font-bold m-2">Sign In</h2>
       <form
-        className="flex flex-col justify-center items-center"
+        className="flex flex-col justify-center text-black items-center"
         onSubmit={handleSignIn}
       >
         <input
@@ -64,14 +74,14 @@ const SignIn = (props: {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <div className="text-sm m-2">
+        <div className="text-sm text-white m-2">
           Don't have an account yet?{" "}
           <div
             onClick={() => {
               props.setIsSignInOpen(false);
               props.setIsSignUpOpen(true);
             }}
-            className="underline text-blue-100 hover:text-blue-200 hover:cursor-pointer hover:underline-offset-2"
+            className="underline text-blue-200 hover:text-blue-300 hover:cursor-pointer hover:underline-offset-2"
           >
             Click here.
           </div>
