@@ -4,9 +4,11 @@ import Logout from "./Logout";
 import SignIn from "./SignIn";
 import Modal from "react-modal";
 import SignUp from "./SignUp";
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const user = useAuth();
+  const navigate = useNavigate();
 
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
@@ -29,10 +31,15 @@ const NavBar = () => {
     <div>
       <header className="bg-white text-black">
         <nav className="container mx-auto flex justify-between items-center py-4">
-          <div className="text-lg font-bold">Film App</div>
+          <div
+            onClick={() => navigate("/")}
+            className="text-lg font-bold hover:cursor-pointer"
+          >
+            Film App
+          </div>
           <ul className="flex space-x-6 mx-2">
             <li>
-              <a href="#" className="hover:text-gray-300">
+              <a href="/" className="hover:text-gray-300">
                 Home
               </a>
             </li>
@@ -41,7 +48,10 @@ const NavBar = () => {
             </li>
             {user ? (
               <li>
-                <div className="hover:text-gray-300 hover:cursor-pointer">
+                <div
+                  onClick={() => navigate("/profile")}
+                  className="hover:text-gray-300 hover:cursor-pointer"
+                >
                   Profile
                 </div>
               </li>

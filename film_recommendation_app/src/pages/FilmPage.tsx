@@ -6,12 +6,19 @@ import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import { EyeIcon as EyeOutline } from "@heroicons/react/24/outline";
 import { EyeIcon as EyeSolid } from "@heroicons/react/24/solid";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
 import { notification } from "antd";
-import { addFilmToFavourites, addFilmToWatchlist } from "../routes/api";
 import useAuth from "../hooks/useAuth";
 import { getAuth, signOut } from "firebase/auth";
+import {
+  deleteMovieFromFavourites,
+  deleteMovieFromWatchlist,
+  isInFavourites,
+  isInWatchlist,
+  saveMovieToFavourites,
+  saveMovieToWatchlist,
+} from "../routes/api";
 
 function FilmPage() {
   const location = useLocation();
@@ -48,11 +55,50 @@ function FilmPage() {
     }
   };
 
+  useEffect(() => {
+    if (user && movie) {
+      isHeartClicked();
+      isWatchlistClicked();
+    }
+  }, [user, movie]);
+
   if (!movie) {
     return <div>Movie not found or no movie data available.</div>;
   }
 
   let imgSrc = "https://image.tmdb.org/t/p/w500" + movie.posterUrl;
+
+  const isHeartClicked = async () => {
+    try {
+      if (!user) {
+        navigate("/");
+      } else {
+        handleMissingToken();
+        const response = await isInFavourites(user.uid, movie);
+        if (response) {
+          setToggleHeart(true);
+        }
+      }
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
+
+  const isWatchlistClicked = async () => {
+    try {
+      if (!user) {
+        navigate("/");
+      } else {
+        handleMissingToken();
+        const response = await isInWatchlist(user.uid, movie);
+        if (response) {
+          setToggleWatchlist(true);
+        }
+      }
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
 
   const handleHeartIconClick = async () => {
     try {
@@ -60,13 +106,22 @@ function FilmPage() {
         navigate("/");
       } else {
         handleMissingToken();
-        //await addFilmToFavourites(movie);
-        notification.success({
-          message: "Successfull query",
-          description:
-            "You have succesfully added this film to your watchlist!",
-        });
-        console.log(`Film ${movie.title} liked by user ${user.uid}`);
+        if (!toggleHeart) {
+          await saveMovieToFavourites(user.uid, movie);
+          notification.success({
+            message: "Added to favorites",
+            description:
+              "You have succesfully added this film to your favourites!",
+          });
+          console.log(`Film ${movie.title} liked by user ${user.uid}`);
+        } else {
+          await deleteMovieFromFavourites(user.uid, movie);
+          notification.success({
+            message: `${movie.title} deleted from favorites`,
+            description: `You have succesfully deleted ${movie.title} from your favourites!`,
+          });
+          console.log(`Film ${movie.title} liked by user ${user.uid}`);
+        }
       }
     } catch (error) {
       console.log(error, "error");
@@ -82,15 +137,22 @@ function FilmPage() {
       if (!user) {
         navigate("/");
       } else {
-        //await addFilmToWatchlist(movie);
         handleMissingToken();
-        notification.success({
-          message: "Successfull like!",
-          description: "You have succesfully liked this film!",
-        });
-        console.log(
-          `Film ${movie.title} added to the watchlist of ${user.uid} user!`
-        );
+        if (!toggleWatchlist) {
+          await saveMovieToWatchlist(user.uid, movie);
+          notification.success({
+            message: "Added to Watchlist",
+            description: `You have succesfully added ${movie.title} to your watchlist!`,
+          });
+          console.log(`Film ${movie.title} liked by user ${user.uid}`);
+        } else {
+          await deleteMovieFromWatchlist(user.uid, movie);
+          notification.success({
+            message: `${movie.title} deleted from your watchlist`,
+            description: `You have succesfully deleted ${movie.title} from your watchlist!`,
+          });
+          console.log(`Film ${movie.title} liked by user ${user.uid}`);
+        }
       }
     } catch (error) {
       console.log(error, "error");

@@ -1,14 +1,8 @@
 import axios from "axios";
-import {
-  Movie,
-  MovieResponse,
-  MovieSearch,
-  MovieSearchResponse,
-  transformToMovie,
-} from "../interfaces";
+import { Movie, MovieSearchResponse, transformToMovie } from "../interfaces";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080", // Set the base URL
+  baseURL: "http://localhost:8080",
 });
 
 export const displayPopularMovies = async (): Promise<Movie[]> => {
@@ -39,21 +33,97 @@ export const searchMovies = async (keyword: string): Promise<Movie[]> => {
   }
 };
 
-export const addFilmToFavourites = async (movie: Movie): Promise<boolean> => {
+export const isInWatchlist = async (
+  userId: string,
+  movie: Movie
+): Promise<boolean> => {
   try {
-    console.log("AddFilmToFavourites", movie);
-    await api.post("/add-to-favourites", movie);
-    return true;
+    console.log("isInWatchList: " + userId);
+    const response = await api.post("/isInWatchlist", { userId, movie });
+    console.log("isInWatchlist response: " + response.data);
+    return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
   }
 };
 
-export const addFilmToWatchlist = async (movie: Movie): Promise<boolean> => {
+export const isInFavourites = async (
+  userId: string,
+  movie: Movie
+): Promise<boolean> => {
   try {
-    console.log("AddFilmToWatchlist", movie);
-    await api.post("/add-to-favourites", movie);
-    return true;
+    console.log("isInFavourites: " + userId);
+    const response = await api.post("/isInFavourites", { userId, movie });
+    console.log("isInFavourites response: " + response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const saveMovieToWatchlist = async (
+  userId: string,
+  movie: Movie
+): Promise<void> => {
+  try {
+    await api.post("/saveFilmToWatchlist", { userId, movie });
+  } catch (error) {
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const deleteMovieFromWatchlist = async (
+  userId: string,
+  movie: Movie
+): Promise<void> => {
+  try {
+    await api.post("/deleteFilmFromWatchlist", { userId, movie });
+  } catch (error) {
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const getAllMoviesFromWatchlist = async (
+  userId: string
+): Promise<Movie[]> => {
+  try {
+    const response = await api.post("/getAllFilmsFromWatchlist", userId);
+    console.log("watch:", response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const saveMovieToFavourites = async (
+  userId: string,
+  movie: Movie
+): Promise<void> => {
+  try {
+    await api.post("/saveFilmToFavourites", { userId, movie });
+  } catch (error) {
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const deleteMovieFromFavourites = async (
+  userId: string,
+  movie: Movie
+): Promise<void> => {
+  try {
+    api.post("/deleteMovieFromFavourites", { userId, movie });
+  } catch (error) {
+    throw new Error("An unexpected error occurred");
+  }
+};
+
+export const getAllMoviesFromFavourites = async (
+  userId: string
+): Promise<Movie[]> => {
+  try {
+    const response = await api.post("/getAllFilmsFromFavourites", userId);
+    console.log("favs:", response.data);
+    return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
   }

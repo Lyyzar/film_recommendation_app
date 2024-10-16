@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Movie{
+
+
     @Id
     @GeneratedValue()
     private Long id;
