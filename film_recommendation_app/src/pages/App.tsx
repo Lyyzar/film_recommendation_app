@@ -1,20 +1,40 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useState } from "react";
+import NavBar from "../components/NavBar";
 import Home from "./Home";
 import FilmPage from "./FilmPage";
 import Profile from "./Profile";
+import { Movie } from "../interfaces";
 
-const App: React.FC = () => {
+function Main() {
+  const [displayComponent, setDisplayComponent] = useState<string>("Home");
+  const [movie, setMovie] = useState<Movie>({
+    id: -1,
+    title: "...",
+    genre: "...",
+    overview: "...",
+    releaseDate: "...",
+    rating: -1,
+    posterUrl: "...",
+  });
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/film/:film_name" element={<FilmPage />} />
-        <Route path="/search/:keyword" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="min-h-screen">
+      <NavBar setDisplayComponent={setDisplayComponent} />
+      <div className="bg-gray-400 pt-10">
+        {displayComponent == "Home" ? (
+          <Home setMovie={setMovie} setDisplayComponent={setDisplayComponent} />
+        ) : null}
+        {displayComponent == "FilmPage" ? (
+          <FilmPage movie={movie} setDisplayComponent={setDisplayComponent} />
+        ) : null}
+        {displayComponent == "Profile" ? (
+          <Profile
+            setDisplayComponent={setDisplayComponent}
+            setMovie={setMovie}
+          />
+        ) : null}
+      </div>
+    </div>
   );
-};
-
-export default App;
+}
+export default Main;

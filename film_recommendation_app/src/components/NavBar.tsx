@@ -4,11 +4,11 @@ import Logout from "./Logout";
 import SignIn from "./SignIn";
 import Modal from "react-modal";
 import SignUp from "./SignUp";
-import { useNavigate } from "react-router-dom";
 
-const NavBar = () => {
+const NavBar = (props: {
+  setDisplayComponent: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const user = useAuth();
-  const navigate = useNavigate();
 
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
@@ -32,7 +32,7 @@ const NavBar = () => {
       <header className="bg-white text-black">
         <nav className="container mx-auto flex justify-between items-center py-4">
           <div
-            onClick={() => navigate("/")}
+            onClick={() => props.setDisplayComponent("Home")}
             className="text-lg font-bold hover:cursor-pointer"
           >
             Film App
@@ -49,7 +49,7 @@ const NavBar = () => {
             {user ? (
               <li>
                 <div
-                  onClick={() => navigate("/profile")}
+                  onClick={() => props.setDisplayComponent("Profile")}
                   className="hover:text-gray-300 hover:cursor-pointer"
                 >
                   Profile
