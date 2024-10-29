@@ -1,10 +1,7 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import { Movie } from "../interfaces";
-import {
-  ArrowLeftCircleIcon,
-  HeartIcon as HeartOutline,
-} from "@heroicons/react/24/outline";
+import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
 import { EyeIcon as EyeOutline } from "@heroicons/react/24/outline";
 import { EyeIcon as EyeSolid } from "@heroicons/react/24/solid";
@@ -23,12 +20,12 @@ import {
   saveMovieToWatchlist,
 } from "../routes/api";
 
-function FilmPage(props: {
-  movie: Movie;
-  setDisplayComponent: React.Dispatch<React.SetStateAction<string>>;
-}) {
-  const movie: Movie = props.movie;
+function FilmPage() {
+  const location = useLocation();
+  const movie: Movie = location.state?.movie;
   const user = useAuth();
+
+  const navigate = useNavigate();
 
   const [isHeartHovered, setIsHeartHovered] = useState(false);
   const [isWatchlistHovered, setIsWatchlistHovered] = useState(false);
@@ -50,7 +47,7 @@ function FilmPage(props: {
       signOut(auth)
         .then(() => {
           console.log("No token found. Logging out.");
-          props.setDisplayComponent("Home"); // TODO
+          navigate("/signin");
         })
         .catch((error) => {
           console.error("Error during logout: ", error);
@@ -74,8 +71,7 @@ function FilmPage(props: {
   const isHeartClicked = async () => {
     try {
       if (!user) {
-        alert("You must be logged in!");
-        //props.setDisplayComponent("Home");
+        navigate("/");
       } else {
         handleMissingToken();
         const response = await isInFavourites(user.uid, movie);
@@ -91,9 +87,7 @@ function FilmPage(props: {
   const isWatchlistClicked = async () => {
     try {
       if (!user) {
-        alert("You must be logged in!");
-
-        //props.setDisplayComponent("Home");
+        navigate("/");
       } else {
         handleMissingToken();
         const response = await isInWatchlist(user.uid, movie);
@@ -109,8 +103,7 @@ function FilmPage(props: {
   const handleHeartIconClick = async () => {
     try {
       if (!user) {
-        alert("You must be logged in!");
-        //props.setDisplayComponent("Home");
+        navigate("/");
       } else {
         handleMissingToken();
         if (!toggleHeart) {
@@ -142,8 +135,7 @@ function FilmPage(props: {
   const handleWatchlistIconClick = async () => {
     try {
       if (!user) {
-        alert("You must be logged in!");
-        //props.setDisplayComponent("Home");
+        navigate("/");
       } else {
         handleMissingToken();
         if (!toggleWatchlist) {
@@ -172,98 +164,89 @@ function FilmPage(props: {
   };
 
   return (
-    <div id="main" className="mx-10 min-h-full">
-      <ArrowLeftCircleIcon
-        className="size-12 mb-5 hover:cursor-pointer"
-        onClick={() => props.setDisplayComponent("Home")}
-      />
-      <div
-        id="card"
-        className="flex flex-row min-h-full bg-gray-600 rounded-lg"
-      >
-        <div id="card-left">
-          <img
-            src={imgSrc}
-            alt="poster"
-            className="rounded-l-lg min-h-full w-auto"
-          />
-        </div>
+    <div className="min-h-screen bg-gray-400 text-black">
+      <NavBar />
+      <div id="main" className="m-10 min-h-full">
+        <div
+          id="card"
+          className="flex flex-row min-h-full bg-gray-600 rounded-lg"
+        >
+          <div id="card-left">
+            <img
+              src={imgSrc}
+              alt="poster"
+              className="rounded-l-lg min-h-full w-auto"
+            />
+          </div>
 
-        <div id="card-right" className="flex flex-col w-full">
-          {/* Card Header */}
-          <div
-            id="card-header"
-            className="p-5 bg-white text-3xl font-bold rounded-tr-lg"
-          >
+          <div id="card-right" className="flex flex-col w-full">
+            {/* Card Header */}
             <div
-              id="first-row"
-              className="flex flex-row justify-between rounded-tr-lg"
+              id="card-header"
+              className="p-5 bg-white text-3xl font-bold rounded-tr-lg"
             >
-              <div id="title">{movie.title}</div>
-              <div id="rating">{movie.rating}</div>
-            </div>
-            <div id="second-row" className="text-lg italic mt-2">
-              {movie.genre}
-            </div>
-          </div>
-
-          {/* Card Main */}
-          <div id="card-main" className="flex-grow p-5">
-            <div className="mt-10 text-xl text-white">{movie.overview}</div>
-          </div>
-
-          {/* Card Footer */}
-          <div id="card-footer" className="p-5">
-            <div id="footer" className="flex justify-end">
               <div
-                id="icons"
-                className="flex flex-row w-fit h-fit rounded-xl p-2 bg-white"
+                id="first-row"
+                className="flex flex-row justify-between rounded-tr-lg"
               >
+                <div id="title">{movie.title}</div>
+                <div id="rating">{movie.rating}</div>
+              </div>
+              <div id="second-row" className="text-lg italic mt-2">
+                {movie.genre}
+              </div>
+            </div>
+
+            {/* Card Main */}
+            <div id="card-main" className="flex-grow p-5">
+              <div className="mt-10 text-xl text-white">{movie.overview}</div>
+            </div>
+
+            {/* Card Footer */}
+            <div id="card-footer" className="p-5">
+              <div id="footer" className="flex justify-end">
                 <div
-                  id="heartIcon"
-                  onMouseEnter={() => setIsHeartHovered(true)}
-                  onMouseLeave={() => setIsHeartHovered(false)}
-                  onClick={() => {
-                    if (user) {
-                      setToggleHeart(!toggleHeart);
-                    }
-                  }}
-                  className="mx-2"
+                  id="icons"
+                  className="flex flex-row w-fit h-fit rounded-xl p-2 bg-white"
                 >
-                  {toggleHeart || isHeartHovered ? (
-                    <Tooltip title={toolTipForHeart} placement="top">
-                      <HeartSolid
-                        onClick={handleHeartIconClick}
-                        className="size-10"
-                      />
-                    </Tooltip>
-                  ) : (
-                    <HeartOutline className="size-10" />
-                  )}
+                  <div
+                    id="heartIcon"
+                    onMouseEnter={() => setIsHeartHovered(true)}
+                    onMouseLeave={() => setIsHeartHovered(false)}
+                    onClick={() => setToggleHeart(!toggleHeart)}
+                    className="mx-2"
+                  >
+                    {toggleHeart || isHeartHovered ? (
+                      <Tooltip title={toolTipForHeart} placement="top">
+                        <HeartSolid
+                          onClick={handleHeartIconClick}
+                          className="size-10"
+                        />
+                      </Tooltip>
+                    ) : (
+                      <HeartOutline className="size-10" />
+                    )}
+                  </div>
+                  <div
+                    id="eyeIcon"
+                    onMouseEnter={() => setIsWatchlistHovered(true)}
+                    onMouseLeave={() => setIsWatchlistHovered(false)}
+                    onClick={() => setToggleWatchlist(!toggleWatchlist)}
+                    className="mx-2"
+                  >
+                    {toggleWatchlist || isWatchlistHovered ? (
+                      <Tooltip title={toolTipForWatchlist} placement="top">
+                        <EyeSolid
+                          onClick={handleWatchlistIconClick}
+                          className="size-10"
+                        />
+                      </Tooltip>
+                    ) : (
+                      <EyeOutline className="size-10" />
+                    )}
+                  </div>
+                  <div className=""></div>
                 </div>
-                <div
-                  id="eyeIcon"
-                  onMouseEnter={() => setIsWatchlistHovered(true)}
-                  onMouseLeave={() => setIsWatchlistHovered(false)}
-                  onClick={() => {
-                    if (user) {
-                      setToggleWatchlist(!toggleWatchlist);
-                    }
-                  }}
-                  className="mx-2"
-                >
-                  {toggleWatchlist || isWatchlistHovered ? (
-                    <Tooltip title={toolTipForWatchlist} placement="top">
-                      <EyeSolid
-                        onClick={handleWatchlistIconClick}
-                        className="size-10"
-                      />
-                    </Tooltip>
-                  ) : (
-                    <EyeOutline className="size-10" />
-                  )}
-                </div>
-                <div className=""></div>
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useState } from "react";
+import { useState } from "react";
 import NavBar from "../components/NavBar";
 import { dividerClasses } from "@mui/material";
 import useAuth from "../hooks/useAuth";
@@ -6,28 +6,26 @@ import {
   getAllMoviesFromFavourites,
   getAllMoviesFromWatchlist,
 } from "../routes/api";
+import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
 import { Movie } from "../interfaces";
 
-function Profile(props: {
-  setMovie: React.Dispatch<React.SetStateAction<Movie>>;
-  setDisplayComponent: React.Dispatch<React.SetStateAction<string>>;
-}) {
+function Profile() {
   const [toggleTabs, setToggleTabs] = useState<string>("Favourites");
   const [favouriteMovies, setFavouriteMovies] = useState<Movie[]>([]);
   const [watchlistMovies, setWatchlistMovies] = useState<Movie[]>([]);
 
   const user = useAuth();
+  const navigate = useNavigate();
 
   const handleImageClick = (movie: Movie) => {
     console.log(movie);
-    props.setMovie(movie);
-    props.setDisplayComponent("FilmPage");
+    navigate(`/film/${movie.title}`, { state: { movie } });
   };
 
   const fetchAllFavouriteMovies = async () => {
     if (!user) {
-      props.setDisplayComponent("Home");
+      navigate("/");
     } else {
       const favouriteMovies = await getAllMoviesFromFavourites(user.uid);
       console.log("FAVOURITES: ", favouriteMovies);
@@ -41,7 +39,7 @@ function Profile(props: {
 
   const fetchAllWatchlistMovies = async () => {
     if (!user) {
-      props.setDisplayComponent("Home");
+      navigate("/");
     } else {
       const watchlistMovies = await getAllMoviesFromWatchlist(user.uid);
       console.log("WATCHLIST: ", watchlistMovies);
@@ -54,11 +52,12 @@ function Profile(props: {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-200 text-black">
+      <NavBar />
       <div>
         <ul className="m-4">
           <li
-            className="bg-black text-white rounded-lg w-fit m-2 p-2 hover:bg-gray-500 hover:cursor-pointer"
+            className="bg-gray-400 rounded-lg w-fit m-2 p-2 hover:bg-gray-500 hover:cursor-pointer"
             onClick={() => {
               setToggleTabs("Favourites");
               fetchAllFavouriteMovies();
@@ -67,7 +66,7 @@ function Profile(props: {
             Favourites
           </li>
           <li
-            className="bg-black text-white rounded-lg w-fit m-2 p-2 hover:bg-gray-500 hover:cursor-pointer"
+            className="bg-gray-400 rounded-lg w-fit m-2 p-2 hover:bg-gray-500 hover:cursor-pointer"
             onClick={() => {
               setToggleTabs("Watchlist");
               fetchAllWatchlistMovies();
@@ -77,18 +76,7 @@ function Profile(props: {
           </li>
         </ul>
       </div>
-      <div className="flex justify-center">
-        {toggleTabs == "Favourites" ? (
-          <h1 className="text-center mb-5 font-bold text-2xl rounded-lg bg-white w-fit h-fit p-2">
-            Your Favourite Movies
-          </h1>
-        ) : (
-          <h1 className="text-center mb-5 font-bold text-2xl">
-            Your Watchlist
-          </h1>
-        )}
-      </div>
-
+      <h1>Films:</h1>
       <div>
         {toggleTabs === "Favourites" ? (
           <div>
@@ -119,6 +107,7 @@ function Profile(props: {
             </ul>
           </div>
         ) : null}
+
         {toggleTabs === "Watchlist" ? (
           <ul className="mx-10 flex flex-col items-center">
             {watchlistMovies.map((movie, index) => {

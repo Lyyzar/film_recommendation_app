@@ -7,9 +7,7 @@ const api = axios.create({
 
 export const displayPopularMovies = async (): Promise<Movie[]> => {
   try {
-    console.log("DisplayPopularMovies");
     const response = await api.get("/fetch-movies");
-    console.log("Received data from the API", response.data);
     return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
@@ -18,14 +16,10 @@ export const displayPopularMovies = async (): Promise<Movie[]> => {
 
 export const searchMovies = async (keyword: string): Promise<Movie[]> => {
   try {
-    console.log("SearchMovies", keyword);
     const response = await api.get(`/search?keyword=${keyword}`);
-    console.log("Received data from the API", response.data);
     const moviesSearchResults: MovieSearchResponse = response.data;
-
     const transformedMovies: Movie[] =
       moviesSearchResults.results.map(transformToMovie);
-    console.log("Transformed movies", transformedMovies);
     return transformedMovies;
   } catch (error) {
     console.log("Error", error);
@@ -38,9 +32,7 @@ export const isInWatchlist = async (
   movie: Movie
 ): Promise<boolean> => {
   try {
-    console.log("isInWatchList: " + userId);
     const response = await api.post("/isInWatchlist", { userId, movie });
-    console.log("isInWatchlist response: " + response.data);
     return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
@@ -52,9 +44,7 @@ export const isInFavourites = async (
   movie: Movie
 ): Promise<boolean> => {
   try {
-    console.log("isInFavourites: " + userId);
     const response = await api.post("/isInFavourites", { userId, movie });
-    console.log("isInFavourites response: " + response.data);
     return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
@@ -66,6 +56,8 @@ export const saveMovieToWatchlist = async (
   movie: Movie
 ): Promise<void> => {
   try {
+    console.log("Mov" + movie);
+
     await api.post("/saveFilmToWatchlist", { userId, movie });
   } catch (error) {
     throw new Error("An unexpected error occurred");
@@ -88,7 +80,6 @@ export const getAllMoviesFromWatchlist = async (
 ): Promise<Movie[]> => {
   try {
     const response = await api.post("/getAllFilmsFromWatchlist", userId);
-    console.log("watch:", response.data);
     return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
@@ -122,7 +113,6 @@ export const getAllMoviesFromFavourites = async (
 ): Promise<Movie[]> => {
   try {
     const response = await api.post("/getAllFilmsFromFavourites", userId);
-    console.log("favs:", response.data);
     return response.data;
   } catch (error) {
     throw new Error("An unexpected error occurred");
